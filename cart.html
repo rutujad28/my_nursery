@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cart - Paradise Nursery</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+    <header class="navbar">
+        <div>
+            <h1>Paradise Nursery</h1>
+            <p>Where Green Meets Serenity</p>
+        </div>
+        <a href="index.html" class="back-link">Home</a>
+        <a href="products.html" class="back-link">Back to Products</a>
+    </header>
+
+    <main class="cart-page">
+        <h1>Your Cart</h1>
+
+        <!-- Cart items will be dynamically populated here -->
+        <div id="cart-items" class="cart-items-container"></div>
+
+        <p>Total: $<span id="total-price">0.00</span></p>
+
+        <!-- Cart Action Buttons (Continue Shopping and Checkout) -->
+        <div class="cart-actions">
+            <button class="green-button" onclick="continueShopping()">Continue Shopping</button>
+            <button class="green-button" onclick="checkout()">Checkout</button>
+        </div>
+    </main>
+
+    <script>
+        // Sample data for plants
+        const plantsData = [
+            { id: 1, name: 'Rose', category: 'Flower Plants', price: 5.99, imageUrl: 'rose.jpg' },
+            { id: 2, name: 'Tulip', category: 'Flower Plants', price: 3.99, imageUrl: 'tulip.jpg' },
+            { id: 3, name: 'Aloe Vera', category: 'Medicinal Plants', price: 7.99, imageUrl: 'aloevera.jpg' },
+            { id: 4, name: 'Lemon Tree', category: 'Fruit Plants', price: 15.99, imageUrl: 'lemon_tree.jpg' }
+        ];
+
+        // Global cart and total price
+        let cart = [];
+        let totalPrice = 0;
+
+        // Load cart from localStorage on page load
+        loadCartFromLocalStorage();
+
+        // Load products into the cart page on DOMContentLoaded
+        document.addEventListener('DOMContentLoaded', () => {
+            const cartItemsContainer = document.getElementById('cart-items');
+            if (cartItemsContainer) {
+                loadCartItems();
+                updateTotalPrice();
+            }
+        });
+
+        // Function to load cart items on the cart page
+        function loadCartItems() {
+            const cartItemsContainer = document.getElementById('cart-items');
+            cartItemsContainer.innerHTML = ''; // Clear previous content
+
+            cart.forEach((item) => {
+                const cartItem = document.createElement('div');
+                cartItem.classList.add('cart-item');
+
+                cartItem.innerHTML = `
+                    <div class="cart-item-content">
+                        <img src="${item.imageUrl}" alt="${item.name}" class="cart-item-image">
+                        <div class="cart-item-details">
+                            <h3>${item.name}</h3>
+                            <p>Category: ${item.category}</p>
+                            <p>Price: $${item.price.toFixed(2)}</p>
+                            <div class="cart-quantity">
+                                <button class="decrease-btn" onclick="decreaseQuantity(${item.id})">-</button>
+                                <span id="quantity-${item.id}">${item.quantity || 1}</span> <!-- Initialize quantity to 1 if undefined -->
+                                <button class="increase-btn" onclick="increaseQuantity(${item.id})">+</button>
+                            </div>
+                            <p>Subtotal: $<span id="subtotal-${item.id}">${(item.price * (item.quantity || 1)).toFixed(2)}</span></p>
+                            <button class="delete-from-cart" onclick="deleteFromCart(${item.id})">Delete</button>
+                        </div>
+                    </div>
+                `;
+
+                cartItemsContainer.appendChild(cartItem);
+
+                // Keep the "Add to Cart" button disabled for items already in cart
+                updateButtonState(item.id, true);
+            });
+        }
+
+        // Function to update the total price in the cart
+        function updateTotalPrice() {
+            const totalPriceElement = document.getElementById('total-price');
+            if (totalPriceElement) {
+                totalPriceElement.textContent = totalPrice.toFixed(2);
+            }
+        }
+
+        // Function to update the cart count in the navbar
+        function updateCartCount() {
+            const cartCountElement = document.getElementById('cart-count');
+            if (cartCountElement) {
+                cartCountElement.textContent = cart.length; // Update the cart count based on the number of items in the cart
+            }
+        }
+
+        // Function to increase the quantity of an item
+        function increaseQuantity(id) {
+            const item = cart.find((p) => p.id === id);
+            if (item) {
+                item.quantity = (item.quantity || 1) + 1; // Increase the quantity by 1
+                totalPrice += item.price; // Add the item price to the total price
+
+                // Update the quantity and subtotal in the UI
+                document.getElementById(`quantity-${id}`).textContent = item.quantity;
+                document.getElementById(`subtotal-${id}`).textContent = (item.price * item.quantity).toFixed(2);
+
+                updateTotalPrice();
+                saveCartToLocalStorage(); // Save changes to localStorage
+            }
+        }
+
+        // Function to decrease the quantity of an item (only if greater than 1)
+        function decreaseQuantity(id) {
+            const item = cart.find((p) => p.id === id);
+            if (item && item.quantity > 1) {
+                item.quantity--; // Decrease the quantity by 1
+                totalPrice -= item.price; // Subtract the item price from the total price
+
+                // Update the quantity and subtotal in the UI
+                document.getElementById(`quantity-${id}`).textContent = item.quantity;
+                document.getElementById(`subtotal-${id}`).textContent = (item.price * item.quantity).toFixed(2);
+
+                updateTotalPrice();
+                saveCartToLocalStorage(); // Save changes to localStorage
+            }
+        }
+
+        // Function to delete an item from the cart
+        function deleteFromCart(id) {
+            const item = cart.find((p) => p.id === id);
+
+            if (item) {
+                totalPrice -= item.price * item.quantity; // Subtract total item price
+                cart = cart.filter((p) => p.id !== id); // Remove the item from the cart
+
+                updateButtonState(id, false);
+                updateCartCount();
+            }
+
+            loadCartItems(); // Reload the cart items on the cart page
+            updateTotalPrice(); // Update the total price in the cart
+            saveCartToLocalStorage(); // Save changes to localStorage
+        }
+
+        // Save cart and total price to localStorage
+        function saveCartToLocalStorage() {
+            localStorage.setItem('cart', JSON.stringify(cart));
+            localStorage.setItem('totalPrice', totalPrice.toFixed(2));
+        }
+
+        // Load cart from localStorage
+        function loadCartFromLocalStorage() {
+            const savedCart = JSON.parse(localStorage.getItem('cart'));
+            const savedTotalPrice = parseFloat(localStorage.getItem('totalPrice'));
+
+            if (savedCart) {
+                cart = savedCart;
+                totalPrice = isNaN(savedTotalPrice) ? 0 : savedTotalPrice; // Ensure totalPrice is a number
+            }
+        }
+
+        // Helper function to update button state based on whether the item is in the cart
+        function updateButtonState(id, inCart) {
+            const button = document.getElementById(`add-to-cart-${id}`);
+            if (button) {
+                button.textContent = inCart ? "Added" : "Add to Cart";
+                button.disabled = inCart; // Disable button if in cart
+                if (inCart) {
+                    button.classList.add('blurred'); // Add blurred class
+                } else {
+                    button.classList.remove('blurred'); // Remove the blurred class
+                }
+            }
+        }
+
+        // Function to navigate back to the products page
+        function continueShopping() {
+            window.location.href = 'products.html'; // Change 'products.html' to your actual products page URL
+        }
+
+        // Function to navigate to the checkout page
+        function checkout() {
+            window.location.href = 'index.html'; // Change 'checkout.html' to your actual checkout page URL
+        }
+    </script>
+
+
+    <style>
+        .cart-page {
+            padding: 20px;
+        }
+
+        /* Cart item styles */
+        .cart-items-container {
+            display: flex;
+            flex-direction: column;
+            /* Stack items vertically */
+            align-items: center;
+            /* Center items */
+            color: black;
+        }
+
+        .cart-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            /* Space between image and details */
+            margin-bottom: 20px;
+            /* Space between cart items */
+            padding: 15px;
+            border: 1px solid #ccc;
+            /* Border for separation */
+            border-radius: 5px;
+            /* Rounded corners */
+            width: 100%;
+            /* Full width of the container */
+            max-width: 600px;
+            /* Maximum width for better readability */
+            background-color: rgba(255, 255, 255, 0.8);
+            /* Light background */
+        }
+
+        .cart-item-content {
+            display: flex;
+            align-items: center;
+            /* Align items vertically */
+            width: 100%;
+            /* Full width for child elements */
+        }
+
+        .cart-item-image {
+            width: 100px;
+            /* Set width for product image */
+            height: 100px;
+            /* Set height for product image */
+            object-fit: cover;
+            /* Cover the area without distortion */
+            margin-right: 15px;
+            /* Space between image and text */
+        }
+
+        .cart-item-details {
+            flex: 1;
+            /* Take available space */
+            text-align: left;
+            /* Align text to the left */
+        }
+
+        .cart-item-details h3 {
+            font-size: 1.5rem;
+            /* Larger font size for product name */
+            margin: 0;
+            /* Remove default margin */
+        }
+
+        .cart-item-details p {
+            margin: 5px 0;
+            /* Space between paragraphs */
+        }
+
+        .delete-from-cart {
+            background-color: #dc3545;
+            /* Red color for delete */
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            cursor: pointer;
+            border-radius: 4px;
+            transition: background-color 0.3s;
+            /* Smooth transition */
+        }
+
+        .delete-from-cart:hover {
+            background-color: #c82333;
+            /* Darker red on hover */
+        }
+
+        /* Total price styling */
+        .total-price {
+            font-size: 1.2rem;
+            /* Font size for total price */
+            margin-top: 20px;
+            /* Space above total price */
+        }
+    </style>
+
+</body>
+
+</html>

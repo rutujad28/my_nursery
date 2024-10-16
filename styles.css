@@ -1,0 +1,261 @@
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    color: white;
+    background-color: #f4f4f4;
+    background-image: url('nursery-background.png'); /* Corrected syntax */
+    background-size: cover; /* Optional: to cover the entire body */
+    background-repeat: no-repeat; /* Optional: to prevent repeating the image */
+    text-align: center;
+}
+
+.navbar {
+    background-color: #4CAF50;
+    color: white;
+    padding: 10px;
+    text-align: center;
+}
+
+.main {
+    padding: 20px;
+}
+
+/* Main landing page styling */
+.landing-page {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: calc(100vh - 80px); /* Adjust height to account for the header */
+    text-align: center;
+    padding: 20px;
+}
+
+.left-section, .right-section {
+    flex: 1;
+}
+
+.left-section {
+    padding-right: 20px;
+}
+
+.right-section {
+    padding-left: 20px;
+    font-size: 2rem;;
+}
+
+.left-section h1, .left-section h2 {
+    margin-bottom: 20px;
+}
+
+.get-started {
+    padding: 10px 20px;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    cursor: pointer;
+    font-size: 18px;
+    border-radius: 5px;
+}
+
+.get-started:hover {
+    background-color: #45a049;
+}
+
+/* Ensure the text is centered in both sections */
+.landing-page .left-section, .landing-page .right-section {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .landing-page {
+        flex-direction: column;
+    }
+
+    .left-section, .right-section {
+        padding: 0;
+    }
+}
+button {
+    background-color: #4CAF50;
+    color: white;
+    padding: 10px;
+    border: none;
+    cursor: pointer;
+}
+
+button:hover {
+    background-color: #45a049;
+}
+
+.product-listing, .cart-page {
+    padding: 20px;
+}
+
+.plant-category {
+    display: flex;
+    flex-wrap: wrap;
+}
+
+/* General styling for the product cards */
+/* Centering container for the product cards */
+.product-container {
+    display: flex;
+    flex-wrap: wrap; /* To allow wrapping of the cards if they don't fit in one line */
+    justify-content: center; /* Align cards horizontally in the center */
+    align-items: center; /* Align cards vertically in the center (optional) */
+    min-height: 100vh; /* Ensure the container takes up at least the full viewport height */
+    margin: 0 auto;
+    padding: 20px; /* Optional padding around the container */
+    box-sizing: border-box;
+}
+
+/* Product card styles */
+.plant-image {
+    width: 100px;
+    height: 100px;
+    object-fit: cover;
+    margin-bottom: 10px;
+}
+
+.product-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    border: 1px solid #ccc;
+    padding: 10px;
+    margin: 10px;
+    text-align: center;
+    width: 250px; /* Fixed width to keep cards uniform */
+    background-color: #d3d3d3;
+}
+
+.product-card h3 {
+    font-size: 1.2em;
+    margin-bottom: 10px;
+    color: black;
+}
+
+.product-card p {
+    font-size: 1em;
+    margin-bottom: 10px;
+    color: black;
+}
+
+.product-card button {
+    padding: 8px 16px;
+    background-color: #28a745;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 1em;
+}
+
+.product-card button:disabled {
+    cursor: not-allowed;
+    opacity: 0.5;
+}
+
+/* Add blur effect when button is disabled */
+.product-card button.blurred {
+    filter: blur(2px); /* Adds the blur effect */
+    background-color: #d3d3d3; /* Gray out the button */
+    color: #fff;
+    border: 1px solid #999;
+}
+
+/* Styles for the button when the item is added to the cart */
+button.added-to-cart {
+    background-color: #28a745; /* Green background for success */
+    color: white; /* White text */
+    border: none;
+    cursor: not-allowed; /* Show the cursor is disabled */
+    opacity: 0.8; /* Slight opacity for a disabled effect */
+}
+
+/* Styles for the button when the item is added to the cart and disabled */
+button.blurred {
+    background-color: #28a745; /* Green background for success */
+    color: white; /* White text */
+    border: none;
+    cursor: not-allowed; /* Show the cursor is disabled */
+    opacity: 0.6; /* Reduce opacity for disabled effect */
+    filter: blur(1px); /* Apply blur effect */
+    transition: all 0.3s ease; /* Smooth transition */
+}
+
+/* Cart item styles */
+.cart-item {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 10px;
+}
+
+/* Delete button for cart items */
+button.delete-from-cart {
+    background-color: #dc3545; /* Red color for delete */
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    cursor: pointer;
+    border-radius: 4px;
+}
+
+button.delete-from-cart:hover {
+    background-color: #c82333;
+}
+
+.blurred {
+    opacity: 0.5; /* Makes the button look faded */
+    pointer-events: none; /* Prevents click events */
+}
+
+.navbar {
+    background-color: #4CAF50; /* Green background */
+    color: white;
+    padding: 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+nav ul {
+    list-style: none;
+    display: flex;
+    gap: 20px; /* Space between nav items */
+}
+
+nav a {
+    color: white;
+    text-decoration: none;
+}
+
+#cart-link {
+    display: flex;
+    align-items: center;
+    position: relative; /* Position relative for cart count */
+}
+
+.cart-icon {
+    width: 50px; /* Set the width of the cart image */
+    height: 50px; /* Set the height of the cart image */
+    vertical-align: middle; /* Align the icon with text */
+}
+
+#cart-count {
+    background-color: red;
+    color: white;
+    border-radius: 50%;
+    padding: 2px 5px;
+    position: absolute; /* Position absolute to overlap the icon */
+    top: 5px; /* Adjust as needed */
+    right: 10px; /* Adjust as needed */
+    font-size: 12px; /* Font size of the count */
+}
+

@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Products - Paradise Nursery</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+    <header class="navbar">
+        <div>
+            <h1>Paradise Nursery</h1>
+            <p>Where Green Meets Serenity</p>
+        </div>
+        <a href="index.html" class="back-link">Home</a>
+        <a href="cart.html" class="cart-link"><img src="cart-icon.png" alt="Cart" class="cart-icon"><span
+                id="cart-count">0</span></a> <!-- Initially 0 -->
+    </header>
+
+    <main class="product-listing">
+        <div class="product-container">
+            <h1>Our Plants</h1>
+            <div class="categories">
+                <h2>Flower Plants</h2>
+                <div class="plant-category" id="flower-plants">
+                    <!-- Products will be loaded here by JavaScript -->
+                </div>
+
+                <h2>Medicinal Plants</h2>
+                <div class="plant-category" id="medicinal-plants">
+                    <!-- Products will be loaded here by JavaScript -->
+                </div>
+
+                <h2>Fruit Plants</h2>
+                <div class="plant-category" id="fruit-plants">
+                    <!-- Products will be loaded here by JavaScript -->
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // Sample data for plants
+        const plantsData = [
+            { id: 1, name: 'Rose', category: 'Flower Plants', price: 6.49, imageUrl: 'rose.png' },
+            { id: 2, name: 'Tulip', category: 'Flower Plants', price: 4.29, imageUrl: 'tulip.png' },
+            { id: 3, name: 'Hibiscus', category: 'Flower Plants', price: 5.99, imageUrl: 'hibiscus.png' },
+            { id: 4, name: 'Marigold', category: 'Flower Plants', price: 3.99, imageUrl: 'marigold.png' },
+            { id: 5, name: 'Aloe Vera', category: 'Medicinal Plants', price: 8.49, imageUrl: 'aloevera.png' },
+            { id: 6, name: 'Basil', category: 'Medicinal Plants', price: 4.49, imageUrl: 'basil.png' },
+            { id: 7, name: 'Ginger', category: 'Medicinal Plants', price: 6.29, imageUrl: 'ginger.png' },
+            { id: 8, name: 'Turmeric', category: 'Medicinal Plants', price: 6.49, imageUrl: 'turmeric.png' },
+            { id: 9, name: 'Lemon', category: 'Fruit Plants', price: 16.99, imageUrl: 'lemon.png' },
+            { id: 10, name: 'Mango', category: 'Fruit Plants', price: 4.49, imageUrl: 'mango.png' },
+            { id: 11, name: 'Chikoo', category: 'Fruit Plants', price: 6.99, imageUrl: 'chikoo.png' },
+            { id: 12, name: 'Banana', category: 'Fruit Plants', price: 5.49, imageUrl: 'banana.png' },
+        ];
+
+
+        // Global cart array and total price
+        let cart = [];
+        let totalPrice = 0;
+
+        // Load products into the product page
+        document.addEventListener('DOMContentLoaded', function () {
+            loadProducts('Flower Plants', 'flower-plants');
+            loadProducts('Medicinal Plants', 'medicinal-plants');
+            loadProducts('Fruit Plants', 'fruit-plants');
+            loadCartFromLocalStorage();
+            updateCartCount(); // Initialize cart count from localStorage
+        });
+
+        function loadProducts(category, containerId) {
+            const container = document.getElementById(containerId);
+            plantsData.filter(plant => plant.category === category).forEach(plant => {
+                const productCard = document.createElement('div');
+                productCard.classList.add('product-card');
+                const buttonState = cart.some(item => item.id === plant.id) ? 'disabled' : ''; // Check if item is in cart
+
+                productCard.innerHTML = `
+            <img src="${plant.imageUrl}" alt="${plant.name}" class="plant-image">
+            <h3>${plant.name}</h3>
+            <p>Price: $${plant.price.toFixed(2)}</p>
+            <button id="add-to-cart-${plant.id}" ${buttonState} onclick="addToCart(${plant.id})">
+                ${buttonState ? "Added to Cart" : "Add to Cart"}
+            </button>
+        `;
+                container.appendChild(productCard);
+            });
+        }
+
+
+        // Function to add item to the cart and disable button
+        function addToCart(id) {
+            const plant = plantsData.find(p => p.id === id);
+
+            if (!cart.some(item => item.id === id)) {
+                cart.push(plant); // Add item to cart
+                totalPrice += plant.price; // Add item price to total
+                updateCartCount(); // Update cart count in UI
+                document.getElementById(`add-to-cart-${id}`).textContent = "Added to Cart"; // Update button text
+                document.getElementById(`add-to-cart-${id}`).disabled = true; // Disable the button
+            }
+
+            saveCartToLocalStorage();
+        }
+
+        // Function to update the cart count in the navbar
+        function updateCartCount() {
+            document.getElementById('cart-count').textContent = cart.length;
+        }
+
+        // Save cart and total price to localStorage
+        function saveCartToLocalStorage() {
+            localStorage.setItem('cart', JSON.stringify(cart));
+            localStorage.setItem('totalPrice', totalPrice.toFixed(2));
+        }
+
+        // Load cart from localStorage
+        function loadCartFromLocalStorage() {
+            const savedCart = JSON.parse(localStorage.getItem('cart'));
+            const savedTotalPrice = parseFloat(localStorage.getItem('totalPrice'));
+
+            if (savedCart) {
+                cart = savedCart;
+                totalPrice = savedTotalPrice || 0;
+                updateCartCount(); // Update the cart count in navbar
+            }
+        }
+    </script>
+</body>
+
+</html>
